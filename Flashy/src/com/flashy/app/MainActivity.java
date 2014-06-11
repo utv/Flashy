@@ -2,6 +2,7 @@ package com.flashy.app;
 
 import java.util.ArrayList;
 
+import com.bossturban.webviewmarker.TextSelectionSupport;
 import com.example.flashy.R;
 
 import it.gmariotti.cardslib.library.internal.Card;
@@ -11,18 +12,34 @@ import it.gmariotti.cardslib.library.internal.CardGridArrayAdapter;
 import it.gmariotti.cardslib.library.view.CardGridView;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.webkit.WebView;
+import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 
@@ -36,8 +53,30 @@ public class MainActivity extends ActionBarActivity {
 	private String[] columns;
 	private int[] to;
 	public static Cursor cursor;
-	static ArrayList<Card> cards;
-	private static int count;
+	private static ArrayList<Card> cards;
+	
+	// clipboard service and its listener
+	private static ClipboardManager clipboard;
+	private OnPrimaryClipChangedListener listener = new OnPrimaryClipChangedListener(){
+        public void onPrimaryClipChanged() {performClipboardCheck();}
+        
+        private void performClipboardCheck() {
+    		String word;
+    		String meaning;
+    		
+            if (clipboard.hasPrimaryClip()) {
+            	ClipData cd = clipboard.getPrimaryClip();
+            	if(cd.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                	Log.i("performClipboardCheck", "item count = " + cd.getItemCount());
+                	Log.i("performClipboardCheck", "item = " + cd.getItemAt(0).coerceToText(getApplicationContext()));
+                	
+            		word = cd.getItemAt(0).coerceToText(getApplicationContext()).toString();
+            		meaning = "";
+            		helper.insertCard(word, meaning);
+            		//helper.close();
+            	}
+            } 
+    }};
 	
 	public MainActivity(){
 		
@@ -48,10 +87,17 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-        if(savedInstanceState == null)
+        if(savedInstanceState == null) {
+        	Log.i("MainActivity::onCreate", "savedInstanceState == null");
         	getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
-		
-		
+        	
+        	// Listen to clipboard changes
+        	if(clipboard == null) {
+        		Log.i("MainActivity::onCreate", "clipboard == null");
+        		clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        		clipboard.addPrimaryClipChangedListener(listener);
+        	}
+        }
 	}
 
 	@Override
@@ -75,12 +121,22 @@ public class MainActivity extends ActionBarActivity {
 			intent.putExtra(CardEntry.MODE, CardEntry.NEW);
 			startActivity(intent);
 		}
-		/*else if(id == R.id.action_importing){
+		else if(id == R.id.action_importing){			
+			Log.i("onOptionsItemSelected", "action_importing");
 			
-		}*/
+			/*Intent intent = new Intent(this, CaptureWord.class);
+	        startActivity(intent);*/
+		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	
+	@Override
+	public void onBackPressed() {
+	   Intent setIntent = new Intent(Intent.ACTION_MAIN);
+	   setIntent.addCategory(Intent.CATEGORY_HOME);
+	   setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	   startActivity(setIntent);
+	}
 	
 	@Override
 	protected void onPause() {
@@ -91,9 +147,11 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		helper = new DBHelper(this);
-		cursor = helper.getAllByDefault();/****/
+		Log.i("MainActivity::", "onResume");
+		getSupportFragmentManager().beginTransaction().replace(R.id.container, new PlaceholderFragment()).commit();
+		//mCardArrayAdapter.notifyDataSetChanged();
+		/*helper = new DBHelper(this);
+		cursor = helper.getAllByDefault();*//****//*
 		cards = new ArrayList<Card>();
 		mCardArrayAdapter = new CardGridArrayAdapter(this,cards);
 		
@@ -118,15 +176,62 @@ public class MainActivity extends ActionBarActivity {
         	else
         		card.setBackgroundResourceId(R.drawable.card_background_color2);
     		
+        	card.setOnClickListener(new OnCardClickListener() {
+
+				@Override
+				public void onClick(Card card, View view) {
+					// TODO Auto-generated method stub
+					Intent n = null;
+					n = new Intent(getApplicationContext(), ScreenSlideActivity.class);
+					// Need - 1 for correct positions of cards.
+					n.putExtra("POSITION_KEY", Integer.parseInt(card.getId()) - 1);
+					//n.putExtra("DATA", data);
+					startActivity(n);
+				}
+        		
+        	});
         		
         	cards.add(card);
         }
-		mCardArrayAdapter.notifyDataSetChanged();
+		mCardArrayAdapter.notifyDataSetChanged();*/
 
 	}
-	public int getCount(){
-		return count;
-	}
+	
+	
+	/*
+	 * Unused for now.
+	 */
+	/*private void showWebViewDialog() {
+		// start webview
+		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		// Set up the input
+		final EditText input = new EditText(this);
+		input.setInputType(InputType.TYPE_CLASS_TEXT);
+		input.setOnEditorActionListener(new OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView arg0, int actionId,
+					KeyEvent event) {
+				// TODO Auto-generated method stub
+				if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) 
+						|| (actionId == EditorInfo.IME_ACTION_DONE)) {
+					
+	                Log.i("onEditorAction","Enter pressed");
+	                // start webview activity
+	                Intent intent = new Intent(MainActivity.this, CaptureWord.class);
+	                intent.putExtra(CardEntry.ARG_URL, input.getText().toString().trim());
+	                startActivity(intent);
+	            }    
+	            
+				return false;
+			}
+	    });
+		alert.setView(input);
+		AlertDialog alertToShow = alert.create();
+		alertToShow.getWindow().setSoftInputMode(
+		    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		alertToShow.show();
+	}*/
+	
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
@@ -137,29 +242,46 @@ public class MainActivity extends ActionBarActivity {
 			// TODO Auto-generated method stub
 			super.onActivityCreated(savedInstanceState);
 			
-			
 		}
 
 		public PlaceholderFragment() {
 		}
-
+		
+		@Override
+		public void onResume() {
+			super.onResume();
+			Log.i("PlaceholderFragment", "onResume");
+			if(getActivity() != null && mCardArrayAdapter != null) {
+				View rootView = getActivity().findViewById(R.layout.grid_list);
+				//mCardArrayAdapter.notifyDataSetChanged();
+				if(rootView != null) setFragmentUI(rootView);
+			}
+			
+			//mCardArrayAdapter.notifyDataSetChanged();
+		}
+		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.grid_list, container,
-					false);
+			Log.i("PlaceholderFragment", "onCreateView");
+			View rootView = inflater.inflate(R.layout.grid_list, container, false);
+			setFragmentUI(rootView);
+			return rootView;
+		}
+		
+		private View setFragmentUI(View rootView) {
 			helper = new DBHelper(rootView.getContext());
-			
-			
 			cursor = helper.getAllByDefault();
 			//cursor = helper.getAllByLastWeekCard();/****/
 			//cursor = helper.getAllByAlphabet();
 			cards = new ArrayList<Card>();
-			  
+			int position = 0;
 	        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 	        	FlashCard card = new FlashCard(rootView.getContext());
 	        	final Long id = cursor.getLong(0);
 	        	card.setId(id);
+	        	
+	        	final int cardPosition = position;
 	        	
 	        	final String term = cursor.getString(1);
 	        	//Log.d("ID", String.valueOf(cursor.getInt(0)));
@@ -176,8 +298,8 @@ public class MainActivity extends ActionBarActivity {
 						Intent n = null;
 						n = new Intent(getActivity(), ScreenSlideActivity.class);
 						// Need - 1 for correct positions of cards.
-						n.putExtra("POSITION_KEY", Integer.parseInt(card.getId()) - 1);
-						n.putExtra("COUNT", count);
+						//n.putExtra("POSITION_KEY", Integer.parseInt(card.getId()) - 1);
+						n.putExtra("POSITION_KEY", cardPosition);
 						//n.putExtra("DATA", data);
 						startActivity(n);
 					}
@@ -217,7 +339,7 @@ public class MainActivity extends ActionBarActivity {
         		
 	        		
 	        	cards.add(card);
-	        	
+	        	position++;
 	        }
             mCardArrayAdapter = new CardGridArrayAdapter(rootView.getContext(),cards);
             gridView = (CardGridView)rootView.findViewById(R.id.my_grid_list);
@@ -249,10 +371,8 @@ public class MainActivity extends ActionBarActivity {
             if (gridView!=null){
                 gridView.setAdapter(mCardArrayAdapter);
             }
-            
-			return rootView;
+            return rootView;
 		}
-		
 		
 	}
 	/*
