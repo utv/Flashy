@@ -12,4 +12,6 @@ public class CardEntry {
 	public static final String MODE = "mode";
 	public static final int NEW = 0;
 	public static final int EDIT = 1;
+	
+	//public final static String ARG_URL = "URL";
 }

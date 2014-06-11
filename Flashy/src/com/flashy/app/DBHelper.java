@@ -67,7 +67,7 @@ public class DBHelper{
 		db.update(CardEntry.TABLE_NAME, cv, "_id=?", args);
 		
 	}
-	public long insertCard(String word , String mean) {
+	public long insertCard(String word , String meaning) {
 		db = mDbHelper.getWritableDatabase();
 		/*
 		 * check if the word is already exist in db? 
@@ -90,7 +90,7 @@ public class DBHelper{
 		}
 		ContentValues cv = new ContentValues();
 		cv.put(CardEntry.COLUMN_NAME_WORD, word.substring(0,1).toUpperCase() + word.substring(1)); // first letter to Capital
-		cv.put(CardEntry.COLUMN_NAME_MEANING, mean);
+		cv.put(CardEntry.COLUMN_NAME_MEANING, meaning);
 		
 		cv.put(CardEntry.COLUMN_NAME_DATE, dateFormat.format(date));
 		//cv.put(CardEntry.COLUMN_NAME_DATE, "2014-05-15");
