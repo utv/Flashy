@@ -60,7 +60,8 @@ public class ScreenSlideActivity extends FragmentActivity {
         	Log.i("ScreenSlideActivity::onCreate", "currentPage = " + currentPage);
         	
         	helper = new DBHelper(this);
-        	cursor = helper.getAllByLastWeekCard();
+        	//cursor = helper.getAllByLastWeekCard();
+        	cursor = helper.getAllByDefault();
         	stateList = new ArrayList<Boolean>();
         	for(int i=0; i < cursor.getCount(); i++)
         		stateList.add(true);

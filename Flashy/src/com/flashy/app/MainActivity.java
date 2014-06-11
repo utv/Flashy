@@ -54,7 +54,6 @@ public class MainActivity extends ActionBarActivity {
 	private int[] to;
 	public static Cursor cursor;
 	private static ArrayList<Card> cards;
-	private static int count;
 	
 	// clipboard service and its listener
 	private static ClipboardManager clipboard;
@@ -74,7 +73,7 @@ public class MainActivity extends ActionBarActivity {
             		word = cd.getItemAt(0).coerceToText(getApplicationContext()).toString();
             		meaning = "";
             		helper.insertCard(word, meaning);
-            		helper.close();
+            		//helper.close();
             	}
             } 
     }};
@@ -132,6 +131,14 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	@Override
+	public void onBackPressed() {
+	   Intent setIntent = new Intent(Intent.ACTION_MAIN);
+	   setIntent.addCategory(Intent.CATEGORY_HOME);
+	   setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	   startActivity(setIntent);
+	}
+	
+	@Override
 	protected void onPause() {
 		super.onPause();
 		helper.close();
@@ -140,7 +147,9 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+		Log.i("MainActivity::", "onResume");
+		getSupportFragmentManager().beginTransaction().replace(R.id.container, new PlaceholderFragment()).commit();
+		//mCardArrayAdapter.notifyDataSetChanged();
 		/*helper = new DBHelper(this);
 		cursor = helper.getAllByDefault();*//****//*
 		cards = new ArrayList<Card>();
@@ -167,15 +176,27 @@ public class MainActivity extends ActionBarActivity {
         	else
         		card.setBackgroundResourceId(R.drawable.card_background_color2);
     		
+        	card.setOnClickListener(new OnCardClickListener() {
+
+				@Override
+				public void onClick(Card card, View view) {
+					// TODO Auto-generated method stub
+					Intent n = null;
+					n = new Intent(getApplicationContext(), ScreenSlideActivity.class);
+					// Need - 1 for correct positions of cards.
+					n.putExtra("POSITION_KEY", Integer.parseInt(card.getId()) - 1);
+					//n.putExtra("DATA", data);
+					startActivity(n);
+				}
+        		
+        	});
         		
         	cards.add(card);
-        }*/
-		//mCardArrayAdapter.notifyDataSetChanged();
+        }
+		mCardArrayAdapter.notifyDataSetChanged();*/
 
 	}
-	public int getCount(){
-		return count;
-	}
+	
 	
 	/*
 	 * Unused for now.
@@ -221,7 +242,6 @@ public class MainActivity extends ActionBarActivity {
 			// TODO Auto-generated method stub
 			super.onActivityCreated(savedInstanceState);
 			
-			
 		}
 
 		public PlaceholderFragment() {
@@ -230,64 +250,38 @@ public class MainActivity extends ActionBarActivity {
 		@Override
 		public void onResume() {
 			super.onResume();
-			Log.i("onResume", "onResume yeshhhh");
+			Log.i("PlaceholderFragment", "onResume");
+			if(getActivity() != null && mCardArrayAdapter != null) {
+				View rootView = getActivity().findViewById(R.layout.grid_list);
+				//mCardArrayAdapter.notifyDataSetChanged();
+				if(rootView != null) setFragmentUI(rootView);
+			}
+			
 			//mCardArrayAdapter.notifyDataSetChanged();
 		}
 		
-		
-		/*@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			
-			helper = new DBHelper(getActivity());
-			cursor = helper.getAllByDefault();*//****//*
-			cards = new ArrayList<Card>();
-			mCardArrayAdapter = new CardGridArrayAdapter(getActivity(),cards);
-			
-			  
-	        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-	        	FlashCard card = new FlashCard(getActivity());
-	        	final Long id = cursor.getLong(0);
-	        	card.setId(id);
-	        	
-	        	final String term = cursor.getString(1);
-	        	//Log.d("ID", String.valueOf(cursor.getInt(0)));
-	        	card.setTerm(term);
-	        	
-	        	final String meaning = cursor.getString(2);
-	        	//Log.d("meaning", meaning);
-	        	card.setMeaning(meaning);
-	        	
-	        	if(cursor.getString(2).equals("")){
-	        		card.setBackgroundResourceId(R.drawable.card_background_color1);
-	        		
-	        	}
-	        	else
-	        		card.setBackgroundResourceId(R.drawable.card_background_color2);
-	    		
-	        		
-	        	cards.add(card);
-	        }
-			mCardArrayAdapter.notifyDataSetChanged();
-		}*/
-
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			Log.i("onCreateView", "init rootView");
+			Log.i("PlaceholderFragment", "onCreateView");
 			View rootView = inflater.inflate(R.layout.grid_list, container, false);
+			setFragmentUI(rootView);
+			return rootView;
+		}
+		
+		private View setFragmentUI(View rootView) {
 			helper = new DBHelper(rootView.getContext());
-			
-			
 			cursor = helper.getAllByDefault();
 			//cursor = helper.getAllByLastWeekCard();/****/
 			//cursor = helper.getAllByAlphabet();
 			cards = new ArrayList<Card>();
-			  
+			int position = 0;
 	        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 	        	FlashCard card = new FlashCard(rootView.getContext());
 	        	final Long id = cursor.getLong(0);
 	        	card.setId(id);
+	        	
+	        	final int cardPosition = position;
 	        	
 	        	final String term = cursor.getString(1);
 	        	//Log.d("ID", String.valueOf(cursor.getInt(0)));
@@ -304,8 +298,8 @@ public class MainActivity extends ActionBarActivity {
 						Intent n = null;
 						n = new Intent(getActivity(), ScreenSlideActivity.class);
 						// Need - 1 for correct positions of cards.
-						n.putExtra("POSITION_KEY", Integer.parseInt(card.getId()) - 1);
-						n.putExtra("COUNT", count);
+						//n.putExtra("POSITION_KEY", Integer.parseInt(card.getId()) - 1);
+						n.putExtra("POSITION_KEY", cardPosition);
 						//n.putExtra("DATA", data);
 						startActivity(n);
 					}
@@ -345,7 +339,7 @@ public class MainActivity extends ActionBarActivity {
         		
 	        		
 	        	cards.add(card);
-	        	
+	        	position++;
 	        }
             mCardArrayAdapter = new CardGridArrayAdapter(rootView.getContext(),cards);
             gridView = (CardGridView)rootView.findViewById(R.id.my_grid_list);
@@ -377,10 +371,8 @@ public class MainActivity extends ActionBarActivity {
             if (gridView!=null){
                 gridView.setAdapter(mCardArrayAdapter);
             }
-            
-			return rootView;
+            return rootView;
 		}
-		
 		
 	}
 	/*
