@@ -2,7 +2,6 @@ package com.flashy.app;
 
 import java.util.ArrayList;
 
-import com.bossturban.webviewmarker.TextSelectionSupport;
 import com.example.flashy.R;
 
 import it.gmariotti.cardslib.library.internal.Card;
@@ -42,6 +41,9 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import com.memetix.mst.detect.Detect;
+import com.memetix.mst.language.Language;
+import com.memetix.mst.translate.Translate;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -55,26 +57,34 @@ public class MainActivity extends ActionBarActivity {
 	public static Cursor cursor;
 	private static ArrayList<Card> cards;
 	
+	// Array of languages for translation
+	private Language[] languages = Language.values();
+	
 	// clipboard service and its listener
 	private static ClipboardManager clipboard;
 	private OnPrimaryClipChangedListener listener = new OnPrimaryClipChangedListener(){
         public void onPrimaryClipChanged() {performClipboardCheck();}
         
         private void performClipboardCheck() {
-    		String word;
-    		String meaning;
-    		
             if (clipboard.hasPrimaryClip()) {
             	ClipData cd = clipboard.getPrimaryClip();
             	if(cd.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
                 	Log.i("performClipboardCheck", "item count = " + cd.getItemCount());
                 	Log.i("performClipboardCheck", "item = " + cd.getItemAt(0).coerceToText(getApplicationContext()));
                 	
-            		word = cd.getItemAt(0).coerceToText(getApplicationContext()).toString();
-            		meaning = "";
-            		helper.insertCard(word, meaning);
+            		String word = cd.getItemAt(0).coerceToText(getApplicationContext()).toString();
+            		String meaning = "";
+            		try {
+            			// Translate a collected word and write to db.
+                		new Translation(helper, word);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            		
+            		//helper.insertCard(word, meaning);
             		//helper.close();
-            	}
+            	} 
             } 
     }};
 	
