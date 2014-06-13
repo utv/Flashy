@@ -87,8 +87,8 @@ public class DBHelper {
                 + word.substring(1)); // first letter to Capital
         cv.put(CardEntry.COLUMN_NAME_MEANING, mean);
 
-        //cv.put(CardEntry.COLUMN_NAME_DATE, dateFormat.format(date));
-        cv.put(CardEntry.COLUMN_NAME_DATE, "2014-06-06 04:23:33");
+        cv.put(CardEntry.COLUMN_NAME_DATE, dateFormat.format(date));
+        //cv.put(CardEntry.COLUMN_NAME_DATE, "2014-06-06 04:23:33");
 
         return db.insert(CardEntry.TABLE_NAME, null, cv);
     }
