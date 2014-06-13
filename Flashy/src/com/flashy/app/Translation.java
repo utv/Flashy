@@ -11,9 +11,17 @@ public class Translation {
     private DBHelper helper;
     private String word;
 
+    public Translation(DBHelper dbHelper) {
+        this.helper = dbHelper;
+    }
+    
     public Translation(DBHelper dbHelper, String theWord) {
         this.helper = dbHelper;
         this.word = theWord;
+        new TranslateTask().execute(word);
+    }
+    
+    public void doTranslate(String word) {
         new TranslateTask().execute(word);
     }
 
@@ -21,9 +29,9 @@ public class Translation {
         // Set the Client ID / Client Secret once per JVM. It is set statically
         // and applies to all services
         Translate.setClientId("Flashy");
-        Translate
-                .setClientSecret("lCsQEAZsgQLuoSOkwMeRedPgmSFo5jYz0W3PGnh9d9Y=");
-
+        Translate.setClientSecret("lCsQEAZsgQLuoSOkwMeRedPgmSFo5jYz0W3PGnh9d9Y=");
+        
+        this.word = text;
         Language detectedLanguage = Detect.execute(text);
         // String detectedLang = detectedLanguage.getName(Language.ENGLISH);
         return Translate.execute(text, detectedLanguage, Language.THAI);

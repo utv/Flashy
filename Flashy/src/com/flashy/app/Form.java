@@ -94,7 +94,10 @@ public class Form extends Activity {
                 Log.d("Form:", " Term cannot be null");
                 // /pop up
             }
-
+            
+            AllCardsFragment.mCardArrayAdapter.notifyDataSetChanged();
+            LastWeekFragment.mCardArrayAdapter.notifyDataSetChanged();
+            
             startActivity(new Intent(Form.this, MainActivity.class));
             break;
 
@@ -108,7 +111,9 @@ public class Form extends Activity {
             helper.open();
             helper.deleteCard(id);
 
-            MainActivity.mCardArrayAdapter.notifyDataSetChanged();
+            //MainActivity.mCardArrayAdapter.notifyDataSetChanged();
+            AllCardsFragment.mCardArrayAdapter.notifyDataSetChanged();
+            LastWeekFragment.mCardArrayAdapter.notifyDataSetChanged();
             startActivity(new Intent(Form.this, MainActivity.class));
 
             break;
