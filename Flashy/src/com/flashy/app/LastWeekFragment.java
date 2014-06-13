@@ -120,7 +120,7 @@ public class LastWeekFragment extends Fragment {
 
         mCardArrayAdapter = new CardGridArrayAdapter(rootView.getContext(),
                 cards);
-        gridView = (CardGridView) rootView.findViewById(R.id.my_grid_list_all);
+        gridView = (CardGridView) rootView.findViewById(R.id.my_grid_list_last_week);
 
         if (gridView != null) {
             gridView.setAdapter(mCardArrayAdapter);

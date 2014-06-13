@@ -137,8 +137,9 @@ public class DBHelper {
         db = mDbHelper.getReadableDatabase();
 
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH, -7);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        //cal.add(Calendar.DAY_OF_MONTH, -7);
+        cal.add(Calendar.SECOND, -60);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String d = dateFormat.format(cal.getTime());
         //Log.d("DATE", d);
 
@@ -146,9 +147,12 @@ public class DBHelper {
                 CardEntry.COLUMN_NAME_WORD, CardEntry.COLUMN_NAME_MEANING,
                 CardEntry.COLUMN_NAME_DATE };
         String[] args = { dateFormat.format(cal.getTime()) };
-        Cursor c = db.query(CardEntry.TABLE_NAME, projection, "date("
-                + CardEntry.COLUMN_NAME_DATE + ") >=? ", args, null, null,
+        Cursor c = db.query(CardEntry.TABLE_NAME, projection, 
+                 CardEntry.COLUMN_NAME_DATE + " >=? ", args, null, null,
                 "date(" + CardEntry.COLUMN_NAME_DATE + ") DESC");
+        /*Cursor c = db.query(CardEntry.TABLE_NAME, projection, "date("
+                + CardEntry.COLUMN_NAME_DATE + ") >=? ", args, null, null,
+                "date(" + CardEntry.COLUMN_NAME_DATE + ") DESC");*/
 
         return c;
     }
