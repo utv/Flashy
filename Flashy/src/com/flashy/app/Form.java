@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
@@ -30,6 +31,9 @@ public class Form extends Activity {
         setContentView(R.layout.add_edit_card);
 
         word = (EditText) findViewById(R.id.word);
+        word.requestFocus();
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        
         meaning = (EditText) findViewById(R.id.meaning);
         view = (View) findViewById(R.id.card_layout);
         Bundle extras = getIntent().getExtras();
@@ -62,16 +66,21 @@ public class Form extends Activity {
         // TODO Auto-generated method stub
 
         getMenuInflater().inflate(R.menu.add_menu, menu);
-        /*
-         * if (mode == CardEntry.EDIT) { MenuItem item =
-         * menu.findItem(R.id.delete); item.setVisible(false); MenuItem item2 =
-         * menu.findItem(R.id.add_cancel); item2.setVisible(false); } else{
-         * MenuItem item = menu.findItem(R.id.delete); item.setVisible(false);
-         * MenuItem item2 = menu.findItem(R.id.add_cancel);
-         * item2.setVisible(true);
-         * 
-         * }
-         */
+        
+       if (mode == CardEntry.EDIT) { 
+    	   MenuItem item =menu.findItem(R.id.delete); 
+    	   item.setVisible(true); 
+    	   MenuItem item2 =menu.findItem(R.id.add_cancel); 
+    	   item2.setVisible(true); 
+    	   } 
+       else{
+           MenuItem item = menu.findItem(R.id.delete);
+           item.setVisible(false);
+           MenuItem item2 = menu.findItem(R.id.add_cancel);
+           item2.setVisible(true);
+         
+         }
+         
         return true;
 
     }

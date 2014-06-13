@@ -4,6 +4,7 @@ import com.example.flashy.R;
 
 import android.app.Fragment;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,12 +53,16 @@ public class ScreenSlidePageFragment extends Fragment {
                 R.layout.fragment_screen_slide_page, container, false);
         Log.i("ScreenSlidePageFragment::onCreateView", "mText = " + mText);
         // Set the title view to show the page number.
-        ((TextView) rootView.findViewById(R.id.text1)).setText(mText);
+        TextView text = ((TextView) rootView.findViewById(R.id.text1));
+        text.setText(mText);
+        text.setTextColor(Color.WHITE);
+        text.setTypeface(null, Typeface.BOLD);
+        //((TextView) rootView.findViewById(R.id.text1)).setText(mText);
         // Set background color
         if (mIsFront)
-            rootView.setBackgroundColor(FRONT_COLOR);
+            rootView.setBackgroundResource(R.drawable.front_card);
         else
-            rootView.setBackgroundColor(BACK_COLOR);
+            rootView.setBackgroundResource(R.drawable.back_card);
 
         Log.i("ScreenSlidePageFragment::onCreateView", "mText = " + mText);
         return rootView;
