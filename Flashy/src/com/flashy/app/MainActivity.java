@@ -9,9 +9,12 @@ import it.gmariotti.cardslib.library.internal.Card.OnLongCardClickListener;
 import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.internal.CardGridArrayAdapter;
 import it.gmariotti.cardslib.library.view.CardGridView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar.Tab;
 import android.support.v4.app.Fragment;
-
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
@@ -34,11 +37,13 @@ public class MainActivity extends ActionBarActivity {
     public SimpleCursorAdapter mAdapter;
     public static CardGridArrayAdapter mCardArrayAdapter;
     public static CardGridView gridView;
+    
     // private String[] columns;
     // private int[] to;
     public static Cursor cursor;
     private static ArrayList<Card> cards;
-
+    private static Translation translator;
+    
     // clipboard service and its listener
     private static ClipboardManager clipboard;
     private OnPrimaryClipChangedListener listener = new OnPrimaryClipChangedListener() {
@@ -62,7 +67,13 @@ public class MainActivity extends ActionBarActivity {
                             .coerceToText(getApplicationContext()).toString();
                     try {
                         // Translate a collected word and write to db.
-                        new Translation(helper, word);
+                        // new Translation(new DBHelper(getApplicationContext()), word);
+                        if(translator != null) {
+                            translator.doTranslate(word);
+                            AllCardsFragment.mCardArrayAdapter.notifyDataSetChanged();
+                            LastWeekFragment.mCardArrayAdapter.notifyDataSetChanged();
+                            startActivity(new Intent(MainActivity.this, MainActivity.class));
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -82,9 +93,16 @@ public class MainActivity extends ActionBarActivity {
 
         if (savedInstanceState == null) {
             Log.i("MainActivity::onCreate", "savedInstanceState == null");
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment()).commit();
-
+            /*
+             * getSupportFragmentManager().beginTransaction()
+             * .add(R.id.container, new PlaceholderFragment()).commit();
+             */
+            if(helper == null)
+                helper = new DBHelper(this);
+            
+            if(translator == null && helper != null)
+                translator = new Translation(helper);
+            
             // Listen to clipboard changes
             if (clipboard == null) {
                 Log.i("MainActivity::onCreate", "clipboard == null");
@@ -92,6 +110,13 @@ public class MainActivity extends ActionBarActivity {
                 clipboard.addPrimaryClipChangedListener(listener);
             }
         }
+
+        //TabFragment tab = new TabFragment();
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction();
+        transaction.replace(R.id.container, new TabFragment());
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
@@ -131,136 +156,13 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        helper.close();
+        //helper.close();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.i("MainActivity::", "onResume");
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new PlaceholderFragment()).commit();
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            // TODO Auto-generated method stub
-            super.onActivityCreated(savedInstanceState);
-
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            Log.i("PlaceholderFragment", "onResume");
-            if (getActivity() != null && mCardArrayAdapter != null) {
-                View rootView = getActivity().findViewById(R.layout.grid_list);
-                // mCardArrayAdapter.notifyDataSetChanged();
-                if (rootView != null)
-                    setFragmentUI(rootView);
-            }
-
-            // mCardArrayAdapter.notifyDataSetChanged();
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            Log.i("PlaceholderFragment", "onCreateView");
-            View rootView = inflater.inflate(R.layout.grid_list, container,
-                    false);
-            setFragmentUI(rootView);
-            return rootView;
-        }
-
-        private View setFragmentUI(View rootView) {
-            helper = new DBHelper(rootView.getContext());
-            cursor = helper.getAllByDefault();
-            // cursor = helper.getAllByLastWeekCard();/****/
-            // cursor = helper.getAllByAlphabet();
-            cards = new ArrayList<Card>();
-            int position = 0;
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor
-                    .moveToNext()) {
-                FlashCard card = new FlashCard(rootView.getContext());
-                final Long id = cursor.getLong(0);
-                card.setId(id);
-
-                final int cardPosition = position;
-
-                final String term = cursor.getString(1);
-                // Log.d("ID", String.valueOf(cursor.getInt(0)));
-                card.setTerm(term);
-
-                final String meaning = cursor.getString(2);
-                // Log.d("meaning", meaning);
-                card.setMeaning(meaning);
-                card.setOnClickListener(new OnCardClickListener() {
-
-                    @Override
-                    public void onClick(Card card, View view) {
-                        // TODO Auto-generated method stub
-                        Intent n = null;
-                        n = new Intent(getActivity(), ScreenSlideActivity.class);
-                        // Need - 1 for correct positions of cards.
-                        // n.putExtra("POSITION_KEY",
-                        // Integer.parseInt(card.getId()) - 1);
-                        n.putExtra("POSITION_KEY", cardPosition);
-                        // n.putExtra("DATA", data);
-                        startActivity(n);
-                    }
-
-                });
-                card.setOnLongClickListener(new OnLongCardClickListener() {
-
-                    @Override
-                    public boolean onLongClick(Card card, View view) {
-
-                        card.setId(String.valueOf(id));
-                        // SQLiteCursor data = (SQLiteCursor)
-                        // mCardArrayAdapter.getItem(card.getId());
-                        // data.moveToPosition(position);
-
-                        // Toast.makeText(getActivity(),"Clickable card: pos "+card.getId(),
-                        // Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(getActivity(), Form.class);
-                        intent.putExtra(CardEntry.COLUMN_NAME_CARD_ID, id);
-                        intent.putExtra(CardEntry.COLUMN_NAME_WORD, term);
-                        intent.putExtra(CardEntry.COLUMN_NAME_MEANING, meaning);
-                        intent.putExtra(CardEntry.MODE, CardEntry.EDIT);
-                        startActivity(intent);
-
-                        return false;
-                    }
-                });
-
-                // set bg color to differentiate between card with both meaning
-                // and term or card with only term
-                if (cursor.getString(2).equals(""))
-                    card.setBackgroundResourceId(R.drawable.card_background_color1);
-                else
-                    card.setBackgroundResourceId(R.drawable.card_background_color2);
-
-                cards.add(card);
-                position++;
-            }
-
-            mCardArrayAdapter = new CardGridArrayAdapter(rootView.getContext(),
-                    cards);
-            gridView = (CardGridView) rootView.findViewById(R.id.my_grid_list);
-            if (gridView != null)
-                gridView.setAdapter(mCardArrayAdapter);
-
-            return rootView;
-        }
     }
 
 }
