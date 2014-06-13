@@ -139,9 +139,10 @@ public class MainActivity extends ActionBarActivity {
             Intent intent = new Intent(MainActivity.this, Form.class);
             intent.putExtra(CardEntry.MODE, CardEntry.NEW);
             startActivity(intent);
-        } else if (id == R.id.action_importing) {
+        } 
+        /*else if (id == R.id.action_importing) {
 
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 
