@@ -41,7 +41,7 @@ public class LastWeekFragment extends Fragment {
     
     @Override
     public void onPause() {
-        Log.i("LastWeekFragment", "LastWeekFragment::onPause");
+        //Log.i("LastWeekFragment", "LastWeekFragment::onPause");
         super.onPause();
         helper.close();
     }
@@ -58,9 +58,9 @@ public class LastWeekFragment extends Fragment {
     }*/
     
     private View setupFragmentUI(View rootView) {
-        helper = new DBHelper(rootView.getContext());
-        cursor = helper.getAllByDefault();
-
+        helper = new DBHelper(getActivity());
+        cursor = helper.getAllByLastWeekCard();
+        
         cards = new ArrayList<Card>();
         int position = 0;
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {

@@ -56,12 +56,6 @@ public class MainActivity extends ActionBarActivity {
                 ClipData cd = clipboard.getPrimaryClip();
                 if (cd.getDescription().hasMimeType(
                         ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-                    Log.i("performClipboardCheck",
-                            "item count = " + cd.getItemCount());
-                    Log.i("performClipboardCheck",
-                            "item = "
-                                    + cd.getItemAt(0).coerceToText(
-                                            getApplicationContext()));
 
                     String word = cd.getItemAt(0)
                             .coerceToText(getApplicationContext()).toString();
@@ -92,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            Log.i("MainActivity::onCreate", "savedInstanceState == null");
+            //Log.i("MainActivity::onCreate", "savedInstanceState == null");
             /*
              * getSupportFragmentManager().beginTransaction()
              * .add(R.id.container, new PlaceholderFragment()).commit();
@@ -105,7 +99,7 @@ public class MainActivity extends ActionBarActivity {
             
             // Listen to clipboard changes
             if (clipboard == null) {
-                Log.i("MainActivity::onCreate", "clipboard == null");
+                //Log.i("MainActivity::onCreate", "clipboard == null");
                 clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 clipboard.addPrimaryClipChangedListener(listener);
             }
@@ -160,7 +154,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("MainActivity::", "onResume");
+        //Log.i("MainActivity::", "onResume");
         
     }
 

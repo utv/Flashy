@@ -79,16 +79,16 @@ public class DBHelper {
                 if (check.getString(1).equals(word)) {
                     // already exist
                 }
-            Log.d("1 col", check.getString(1));
-            Log.d("CUrsor", Integer.toString(check.getCount()));
+            //Log.d("1 col", check.getString(1));
+            //Log.d("CUrsor", Integer.toString(check.getCount()));
         }
         ContentValues cv = new ContentValues();
         cv.put(CardEntry.COLUMN_NAME_WORD, word.substring(0, 1).toUpperCase()
                 + word.substring(1)); // first letter to Capital
         cv.put(CardEntry.COLUMN_NAME_MEANING, mean);
 
-        cv.put(CardEntry.COLUMN_NAME_DATE, dateFormat.format(date));
-        // cv.put(CardEntry.COLUMN_NAME_DATE, "2014-06-04 04:23:33");
+        //cv.put(CardEntry.COLUMN_NAME_DATE, dateFormat.format(date));
+        cv.put(CardEntry.COLUMN_NAME_DATE, "2014-06-06 04:23:33");
 
         return db.insert(CardEntry.TABLE_NAME, null, cv);
     }
@@ -96,7 +96,7 @@ public class DBHelper {
     public void deleteCard(long id) {
 
         String[] args = { String.valueOf(id) };
-        Log.d("card id delete", String.valueOf(id));
+        //Log.d("card id delete", String.valueOf(id));
         db.delete(CardEntry.TABLE_NAME, "_id=?", args);
     }
 
@@ -140,7 +140,7 @@ public class DBHelper {
         cal.add(Calendar.DAY_OF_MONTH, -7);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String d = dateFormat.format(cal.getTime());
-        Log.d("DATE", d);
+        //Log.d("DATE", d);
 
         String[] projection = { CardEntry.COLUMN_NAME_CARD_ID,
                 CardEntry.COLUMN_NAME_WORD, CardEntry.COLUMN_NAME_MEANING,
@@ -178,7 +178,7 @@ public class DBHelper {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            Log.i("myTag", SQL_CREATE_ENTRIES);
+            //Log.i("myTag", SQL_CREATE_ENTRIES);
             db.execSQL(SQL_CREATE_ENTRIES);
         }
 

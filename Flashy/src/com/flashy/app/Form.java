@@ -47,9 +47,9 @@ public class Form extends Activity {
                         .getString(CardEntry.COLUMN_NAME_WORD);
                 String meaningString = extras
                         .getString(CardEntry.COLUMN_NAME_MEANING);
-                Log.d("Formedit:", meaningString);
+                //Log.d("Formedit:", meaningString);
                 card_id = extras.getLong(CardEntry.COLUMN_NAME_CARD_ID);
-                Log.d("ID", String.valueOf(card_id));
+                //Log.d("ID", String.valueOf(card_id));
                 word.setText(wordString);
                 if (meaningString != null)
                     meaning.setText(meaningString);
@@ -100,7 +100,7 @@ public class Form extends Activity {
                     helper.insertCard(wordTxt, meanTxt);
                 }
             } else {
-                Log.d("Form:", " Term cannot be null");
+                //Log.d("Form:", " Term cannot be null");
                 // /pop up
             }
             

@@ -43,14 +43,14 @@ public class AllCardsFragment extends Fragment {
     
     @Override
     public void onPause() {
-        Log.i("AllCardsFragment", "AllCardsFragment::onPause");
+        //Log.i("AllCardsFragment", "AllCardsFragment::onPause");
         super.onPause();
         helper.close();
     }
     
     @Override
     public void onResume() {
-        Log.i("AllCardsFragment", "AllCardsFragment::onResume");
+        //Log.i("AllCardsFragment", "AllCardsFragment::onResume");
         super.onResume();
         
         //setupFragmentUI(theRootView);

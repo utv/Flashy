@@ -57,8 +57,7 @@ public class ScreenSlideActivity extends FragmentActivity {
             // state,
             // this fragment will have already been added to the activity.
             currentPage = getIntent().getIntExtra("POSITION_KEY", 0);
-            Log.i("ScreenSlideActivity::onCreate", "currentPage = "
-                    + currentPage);
+            //Log.i("ScreenSlideActivity::onCreate", "currentPage = "+ currentPage);
 
             helper = new DBHelper(this);
             // cursor = helper.getAllByLastWeekCard();
@@ -107,7 +106,7 @@ public class ScreenSlideActivity extends FragmentActivity {
         }
         case MotionEvent.ACTION_UP: {
             int historySize = ev.getHistorySize();
-            Log.i("ACTION_UP", "historySize = " + historySize);
+            //Log.i("ACTION_UP", "historySize = " + historySize);
             /*
              * if(historySize > 0) { float latestY =
              * ev.getHistoricalY(historySize - 1); if(Math.abs(latestY - y) >
@@ -199,12 +198,12 @@ public class ScreenSlideActivity extends FragmentActivity {
 
         public ScreenSlidePagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
-            Log.i("ScreenSlidePagerAdapter", "constructor");
+            //Log.i("ScreenSlidePagerAdapter", "constructor");
         }
 
         @Override
         public Fragment getItem(int position) {
-            Log.i("ScreenSlidePagerAdapter::getItem", "position = " + position);
+            //Log.i("ScreenSlidePagerAdapter::getItem", "position = " + position);
             cursor.moveToPosition(position);
             // Front card
             if (stateList.get(position) == true) {
@@ -244,8 +243,7 @@ public class ScreenSlideActivity extends FragmentActivity {
             mPager = (ViewPager) view.findViewById(R.id.pager);
             mPager.setAdapter(new ScreenSlidePagerAdapter(getFragmentManager()));
 
-            Log.i("CardFrontFragment::onCreateView", "currentPage = "
-                    + currentPage);
+            //Log.i("CardFrontFragment::onCreateView", "currentPage = " + currentPage);
             mPager.setCurrentItem(currentPage);
             mPager.setPageMargin(15);
             // mPager.setPageMarginDrawable(R.color.common_action_bar_splitter);
@@ -253,7 +251,7 @@ public class ScreenSlideActivity extends FragmentActivity {
                 @Override
                 public void onPageSelected(int position) {
                     currentPage = position;
-                    Log.i("onPageSelected", "currentPage = " + currentPage);
+                    //Log.i("onPageSelected", "currentPage = " + currentPage);
                 }
 
                 @Override

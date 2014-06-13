@@ -47,11 +47,11 @@ public class ScreenSlidePageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        Log.i("ScreenSlidePageFragment::onCreateView", "...........");
+        
         // Inflate the layout containing a title and body text.
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.fragment_screen_slide_page, container, false);
-        Log.i("ScreenSlidePageFragment::onCreateView", "mText = " + mText);
+        
         // Set the title view to show the page number.
         TextView text = ((TextView) rootView.findViewById(R.id.text1));
         text.setText(mText);
@@ -64,7 +64,6 @@ public class ScreenSlidePageFragment extends Fragment {
         else
             rootView.setBackgroundResource(R.drawable.back_card);
 
-        Log.i("ScreenSlidePageFragment::onCreateView", "mText = " + mText);
         return rootView;
     }
 
