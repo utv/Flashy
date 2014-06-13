@@ -9,12 +9,12 @@
         android:title="@string/action_adding"
         android:icon="@drawable/ic_action_new"
         app:showAsAction="always"/>
-    <!--  
-    <item
+     
+    <!-- <item
         android:id="@+id/action_importing"
         android:orderInCategory="100"
         android:title="@string/action_importing"
         android:icon="@drawable/ic_action_import_export"
-        app:showAsAction="always"/>
-	-->
+        app:showAsAction="always"/> -->
+	
 </menu>
